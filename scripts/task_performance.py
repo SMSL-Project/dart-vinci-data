@@ -120,7 +120,7 @@ def main():
         "Needle through Ring",
     ]
 
-    task_duration_seconds = 5  # Set duration to 2 minutes (120 seconds)
+    task_duration_seconds = 120  # Set duration to 2 minutes (120 seconds)
 
     data = []
 
