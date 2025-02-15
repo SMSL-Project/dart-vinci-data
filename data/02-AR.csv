@@ -1,0 +1,12 @@
+Task,Total Success,Total attempt,Success Rate,Task Duration (secs)
+Reach,33,33,1.0,120
+Reach with Obstacle,26,26,1.0,120
+Dual Arm Reach,20,20,1.0,120
+Dual Arm Reach with Obstacle,12,12,1.0,120
+Needle Pick,12,15,0.8,120
+Needle Handover,4,8,0.5,120
+Peg Pick,27,27,1.0,120
+Peg Transfer,25,25,1.0,120
+Peg Board Pick and Place,4,7,0.5714285714285714,120
+Needle through Ring,3,5,0.6,120
+TOTAL SESSION TIME,,,,1405.18

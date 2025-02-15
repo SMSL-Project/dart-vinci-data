@@ -7,6 +7,7 @@ Before each task, the user selects a task by entering its enumerated ID. To exit
 the user can type 'exit' when prompted for a task ID. After each task's timer expires,
 the user is prompted to enter the total number of successes and attempts.
 The success rate is computed as total_success / total_attempt.
+At the end, a final row is added to the CSV file storing the total session time.
 All collected data is then saved into the specified CSV file.
 """
 
@@ -105,7 +106,9 @@ def select_task(tasks):
 
 
 def main():
+    # Prompt for the CSV file path and record the start time after the subject codename is given.
     csv_filepath = prepare_csv_filepath()
+    session_start_time = time.time()
 
     tasks = [
         "Reach",
@@ -125,6 +128,8 @@ def main():
     data = []
 
     print("\nPerformance Data Collection for Tasks\n")
+
+    session_start_time = time.time()
 
     while True:
         selected_task = select_task(tasks)
@@ -155,6 +160,20 @@ def main():
                 "Task Duration (secs)": task_duration_seconds,
             }
         )
+
+    # Calculate total session time from subject codename entry until now.
+    total_session_time = time.time() - session_start_time
+
+    # Append a final row with the total session time.
+    data.append(
+        {
+            "Task": "TOTAL SESSION TIME",
+            "Total Success": "",
+            "Total attempt": "",
+            "Success Rate": "",
+            "Task Duration (secs)": round(total_session_time, 2),
+        }
+    )
 
     # Define the header fields for the CSV.
     fieldnames = [
