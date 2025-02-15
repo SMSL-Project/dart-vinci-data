@@ -3,7 +3,8 @@
 This script collects performance data for a series of tasks, each with a 2-minute duration.
 At the start, the user is prompted to specify the CSV file name. The file will be saved to a folder
 named 'data' located in the parent directory of the current working directory.
-For each task, the user initiates a timer by pressing Enter. After the timer expires,
+Before each task, the user selects a task by entering its enumerated ID. To exit data collection,
+the user can type 'exit' when prompted for a task ID. After each task's timer expires,
 the user is prompted to enter the total number of successes and completions.
 The success rate is computed as total_success / total_completion.
 All collected data is then saved into the specified CSV file.
@@ -41,6 +42,7 @@ def start_timer(duration=120):
     Parameters:
         duration (int): Duration of the timer in seconds (default is 120 seconds).
     """
+    print("-" * 60)
     print("\nTask timer started. Please perform the task.")
     for elapsed in range(duration + 1):
         # Display the elapsed time on the same console line.
@@ -57,31 +59,54 @@ def prepare_csv_filepath():
     Returns:
         str: The full file path for the CSV file.
     """
-    # Prompt user to enter the CSV file name.
     csv_filename = input(
-        "Enter CSV file name (without extension or with '.csv'): "
+        "Enter Subject Codename (without extension or with '.csv'): "
     ).strip()
-    # Append .csv extension if not provided.
     if not csv_filename.lower().endswith(".csv"):
         csv_filename += ".csv"
 
-    # Get the parent directory of the current working directory.
     parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
-    # Define the data folder path.
     data_dir = os.path.join(parent_dir, "data")
-    # Create the data folder if it does not exist.
     os.makedirs(data_dir, exist_ok=True)
-    # Construct the full CSV file path.
     csv_filepath = os.path.join(data_dir, csv_filename)
 
     return csv_filepath
 
 
+def select_task(tasks):
+    """
+    Display a list of tasks with their corresponding IDs and prompt the user to select a task.
+    The user can type 'exit' to finish data collection.
+
+    Parameters:
+        tasks (list): List of available tasks.
+
+    Returns:
+        str or None: The selected task name, or None if the user types 'exit'.
+    """
+    print("\nAvailable tasks:")
+    for idx, task in enumerate(tasks, start=1):
+        print(f"{idx}. {task}")
+    selection = input(
+        f"Enter task id (1-{len(tasks)}) or type 'exit' to finish: "
+    ).strip()
+    if selection.lower() == "exit":
+        return None
+    try:
+        task_id = int(selection)
+        if 1 <= task_id <= len(tasks):
+            return tasks[task_id - 1]
+        else:
+            print(f"Invalid task id. Please enter a number between 1 and {len(tasks)}.")
+            return select_task(tasks)
+    except ValueError:
+        print("Invalid input. Please enter a valid task id or 'exit'.")
+        return select_task(tasks)
+
+
 def main():
-    # Obtain the CSV file path from the user.
     csv_filepath = prepare_csv_filepath()
 
-    # List of tasks for which data will be collected.
     tasks = [
         "Reach",
         "Reach with Obstacle",
@@ -95,27 +120,25 @@ def main():
         "Needle through Ring",
     ]
 
-    # Duration for each task in seconds (2 minutes).
-    task_duration_seconds = 10
+    task_duration_seconds = 5  # Set duration to 2 minutes (120 seconds)
 
-    # List to store the collected data for each task.
     data = []
 
     print("\nPerformance Data Collection for Tasks\n")
 
-    # Iterate over each task to collect data.
-    for task in tasks:
-        print(f"Task: {task}")
+    while True:
+        selected_task = select_task(tasks)
+        if selected_task is None:
+            # User chose to exit data collection.
+            break
 
-        # Prompt the user to start the timer.
+        print(f"\nTask: {selected_task}")
         input("Press Enter to start the 2-minute timer for this task...")
         start_timer(task_duration_seconds)
 
-        # After the timer, prompt the user for performance data.
         total_success = get_integer_input("  Enter total number of successes: ")
         total_completion = get_integer_input("  Enter total number of completions: ")
 
-        # Compute the success rate (handle division by zero).
         if total_completion > 0:
             success_rate = total_success / total_completion
         else:
@@ -123,10 +146,9 @@ def main():
 
         print()  # Blank line for readability.
 
-        # Append the collected data for the current task.
         data.append(
             {
-                "Task": task,
+                "Task": selected_task,
                 "Total Success": total_success,
                 "Total Completion": total_completion,
                 "Success Rate": success_rate,
@@ -143,12 +165,11 @@ def main():
         "Task Duration (secs)",
     ]
 
-    # Write the collected data to the CSV file.
     try:
         with open(csv_filepath, mode="w", newline="") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()  # Write the header row.
-            writer.writerows(data)  # Write all task data rows.
+            writer.writerows(data)  # Write all collected task data.
         print(f"\nData has been successfully saved to '{csv_filepath}'.")
     except Exception as e:
         print("An error occurred while writing to the CSV file:", e)
