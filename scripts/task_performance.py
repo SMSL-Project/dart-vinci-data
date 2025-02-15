@@ -5,8 +5,8 @@ At the start, the user is prompted to specify the CSV file name. The file will b
 named 'data' located in the parent directory of the current working directory.
 Before each task, the user selects a task by entering its enumerated ID. To exit data collection,
 the user can type 'exit' when prompted for a task ID. After each task's timer expires,
-the user is prompted to enter the total number of successes and completions.
-The success rate is computed as total_success / total_completion.
+the user is prompted to enter the total number of successes and attempts.
+The success rate is computed as total_success / total_attempt.
 All collected data is then saved into the specified CSV file.
 """
 
@@ -137,10 +137,10 @@ def main():
         start_timer(task_duration_seconds)
 
         total_success = get_integer_input("  Enter total number of successes: ")
-        total_completion = get_integer_input("  Enter total number of completions: ")
+        total_attempt = get_integer_input("  Enter total number of attempts: ")
 
-        if total_completion > 0:
-            success_rate = total_success / total_completion
+        if total_attempt > 0:
+            success_rate = total_success / total_attempt
         else:
             success_rate = 0
 
@@ -150,7 +150,7 @@ def main():
             {
                 "Task": selected_task,
                 "Total Success": total_success,
-                "Total Completion": total_completion,
+                "Total attempt": total_attempt,
                 "Success Rate": success_rate,
                 "Task Duration (secs)": task_duration_seconds,
             }
@@ -160,7 +160,7 @@ def main():
     fieldnames = [
         "Task",
         "Total Success",
-        "Total Completion",
+        "Total attempt",
         "Success Rate",
         "Task Duration (secs)",
     ]
